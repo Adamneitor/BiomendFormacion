@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}{{ brand.full_name }} — Formación continua para el área de la salud{% endblock %}
+
+{% block content %}
+
+<!-- 1 · Oscuro: Hero académico -->
+<section class="hero hero--dark section--dark" id="top">
+  <div class="container">
+  <div class="hero__grid">
+    <div class="hero__copy" data-reveal="left">
+      <h1 class="hero__title">Formación continua para profesionales del <em>área de la salud</em></h1>
+      <p class="hero__lead text-justify">Capacítate con programas actualizados, enfoque teórico-práctico y formación especializada para fortalecer tus conocimientos en el sector salud dominicano.</p>
+      <div class="hero__actions">
+        <a href="/programas" class="btn btn--primary">Ver programas <i data-lucide="arrow-right"></i></a>
+        <a href="/inscripcion" class="btn btn--ghost-light">Inscribirme ahora</a>
+      </div>
+      <div class="hero__stats">
+        {% for s in hero_stats %}
+        <div data-reveal>
+          <div class="stat__value">{{ s.value }}</div>
+          <div class="stat__label">{{ s.label }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="hero__media" data-reveal="right">
+      <div class="hero__media-frame"></div>
+      <div class="hero__media-img">
+        <img src="{{ site_images.hero }}" alt="{{ site_images.hero_alt }}" />
+      </div>
+      <div class="hero__card hero__card--a">
+        <div class="hero__card-row">
+          <span class="hero__card-ico"><i data-lucide="book-open"></i></span>
+          <span class="hero__card-tag">Academia</span>
+        </div>
+        <div class="hero__card-big">Preparación médica</div>
+        <div class="hero__card-sub">Estudio y práctica clínica</div>
+      </div>
+      <div class="hero__card hero__card--b">
+        <div class="hero__card-row">
+          <i data-lucide="badge-check"></i>
+          <span class="hero__card-title">Certificado</span>
+        </div>
+        <div class="hero__card-sub">Sujeto a requisitos del programa</div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- 2 · Blanco: Quiénes somos (foto a la izquierda) -->
+<section class="section section--white">
+  <div class="split split--media-left">
+    <div data-reveal="left" class="split__media">
+      <div class="split__media-frame"></div>
+      <div class="split__media-img">
+        <img src="{{ static_url(site_images.about) }}" alt="{{ site_images.about_alt }}" loading="lazy" />
+      </div>
+    </div>
+    <div data-reveal="right">
+      <div class="eyebrow">Quiénes somos</div>
+      <h2 class="section-title section-title--left">Formación teórica y práctica para el sector salud</h2>
+      <p class="split__lead text-justify">En BIOMEND promovemos espacios de capacitación que fortalecen los conocimientos y competencias de profesionales y estudiantes del área de la salud, con programas impartidos por especialistas y enfocados en la realidad clínica dominicana.</p>
+      <div class="split__stats">
+        {% for s in hero_stats %}
+        <div>
+          <div class="stat__value">{{ s.value }}</div>
+          <div class="stat__label">{{ s.label }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Oscuro: Programas -->
+<section class="section section--dark">
+  <div class="container" style="max-width:1080px">
+    <div class="section-head" data-reveal>
+      <div class="eyebrow">Oferta actual</div>
+      <h2 class="section-title">Nuestros programas disponibles</h2>
+      <p class="section-sub text-justify-center">Un vistazo a los programas con cupos abiertos. Explora el detalle completo en la sección de Programas.</p>
+    </div>
+    <div class="grid-2">
+      {% for p in programs %}
+      <article class="prog-card" data-reveal="3d">
+        <div class="prog-card__media">
+          <img src="{{ p.image }}" alt="{{ p.image_alt }}" loading="lazy" />
+          <span class="prog-card__badge" style="background:{{ p.badge_bg }};color:{{ p.badge_color }}"><i data-lucide="{{ p.badge_icon }}"></i>{{ p.badge_label }}</span>
+        </div>
+        <div class="prog-card__body">
+          <div class="prog-card__kicker">{{ p.kicker }}</div>
+          <h3 class="prog-card__title">{{ p.title }}</h3>
+          <p class="prog-card__excerpt text-justify">{{ p.desc[:140] }}…</p>
+          <div class="prog-card__date"><i data-lucide="calendar"></i>{{ p.card_date }}</div>
+          <a href="/programas" class="prog-card__more">Más información <i data-lucide="arrow-right"></i></a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 4 · Blanco: Por qué BIOMEND -->
+<section class="section section--white">
+  <div class="container">
+    <div class="section-head" data-reveal style="margin-bottom:48px">
+      <div class="eyebrow">Por qué BIOMEND</div>
+      <h2 class="section-title">Razones para elegirnos</h2>
+      <p class="section-sub">Una experiencia de formación pensada para tu crecimiento profesional.</p>
+    </div>
+    <div class="marquee" data-reveal="zoom">
+      <div class="bm-track bm-track--fwd">
+        {% for b in benefits + benefits %}
+        <div class="benefit-chip">
+          <span class="benefit-chip__ico"><i data-lucide="{{ b.icon }}"></i></span>
+          <div>
+            <div class="benefit-chip__title">{{ b.title }}</div>
+            <div class="benefit-chip__desc">{{ b.description }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="bm-track bm-track--rev">
+        {% set benefits_rev = benefits | reverse | list %}
+        {% for b in benefits_rev + benefits_rev %}
+        <div class="benefit-chip">
+          <span class="benefit-chip__ico"><i data-lucide="{{ b.icon }}"></i></span>
+          <div>
+            <div class="benefit-chip__title">{{ b.title }}</div>
+            <div class="benefit-chip__desc">{{ b.description }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
