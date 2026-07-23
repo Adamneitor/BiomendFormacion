@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Programas — {{ brand.full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- 1 · Oscuro: Cabecera -->
+<section class="page-hero section--dark page-pad" id="programas">
+  <div class="container">
+    <div class="page-hero__inner" data-reveal>
+      <div class="breadcrumb"><a href="/">Inicio</a> <i data-lucide="chevron-right"></i> <span>Programas</span></div>
+      <div class="eyebrow">Oferta actual</div>
+      <h1 class="section-title section-title--lg">Programas disponibles</h1>
+      <p class="section-sub">Explora nuestros programas de formación especializada. Usa los círculos para cambiar de programa; el carrusel avanza automáticamente cada 10 segundos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Blanco: Carrusel -->
+<section class="section section--white">
+  <div class="container" style="max-width:1080px">
+    <div class="carousel" data-carousel data-interval="10000" data-reveal="zoom">
+      <div class="carousel__window">
+        <div class="carousel__track" data-carousel-track>
+          {% for p in programs %}
+          <div class="carousel__slide">
+            <div class="prog-detail">
+              <div class="prog-detail__media">
+                <img src="{{ p.image }}" alt="{{ p.image_alt }}" loading="lazy" />
+                <span class="prog-detail__badge" style="background:{{ p.badge_bg }};color:{{ p.badge_color }}"><i data-lucide="{{ p.badge_icon }}"></i>{{ p.badge_label }}</span>
+              </div>
+              <div class="prog-detail__body">
+                <div class="prog-detail__kicker">{{ p.kicker }}</div>
+                <h3 class="prog-detail__title">{{ p.title }}</h3>
+
+                {% if p.has_instructor %}
+                <div class="prog-detail__instr">
+                  <span class="prog-detail__instr-av">{{ p.instr_initials }}</span>
+                  <div>
+                    <div class="prog-detail__instr-name">{{ p.instr_name }}</div>
+                    <div class="prog-detail__instr-role">{{ p.instr_role }}</div>
+                  </div>
+                </div>
+                {% endif %}
+
+                <p class="prog-detail__desc text-justify">{{ p.desc }}</p>
+
+                <div class="prog-detail__meta">
+                  {% for mt in p.meta %}
+                  <div class="prog-meta-item"><i data-lucide="{{ mt.icon }}"></i>{{ mt.text }}</div>
+                  {% endfor %}
+                </div>
+
+                {% if p.has_learn %}
+                <div class="prog-detail__learn">
+                  <div class="prog-detail__learn-h">{{ p.learn_title if p.learn_title else 'Aprenderás' }}</div>
+                  {% if p.learn_intro %}
+                  <p class="prog-detail__desc text-justify" style="margin-bottom:12px">{{ p.learn_intro }}</p>
+                  {% endif %}
+                  <div class="prog-detail__learn-list">
+                    {% for l in p.learn %}
+                    <div class="learn-item"><i data-lucide="check"></i>{{ l }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+
+                <div class="prog-detail__actions">
+                  <a href="/inscripcion?programa={{ p.enroll_name | urlencode }}" class="btn btn--primary btn--sm">Inscribirme <i data-lucide="arrow-right"></i></a>
+                  <a href="{{ p.wa_href }}" target="_blank" rel="noopener" class="btn btn--outline btn--sm">Solicitar información</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if programs | length > 1 %}
+      <div class="carousel__dots" role="tablist" aria-label="Programas">
+        {% for p in programs %}
+        <button type="button" class="carousel__dot {{ 'is-active' if loop.first else '' }}" data-carousel-dot role="tab" aria-label="{{ p.title }}" aria-selected="{{ 'true' if loop.first else 'false' }}"></button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Contacto — {{ brand.full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- 1 · Oscuro: Cabecera -->
+<section class="page-hero section--dark page-pad" id="contacto">
+  <div class="container">
+    <div class="page-hero__inner" data-reveal>
+      <div class="breadcrumb"><a href="/">Inicio</a> <i data-lucide="chevron-right"></i> <span>Contacto</span></div>
+      <div class="eyebrow">Contacto</div>
+      <h1 class="section-title section-title--lg">Hablemos</h1>
+      <p class="section-sub">Escríbenos y con gusto te brindamos toda la información que necesites sobre nuestros programas de formación continua en salud.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Blanco: Canales centrados -->
+<section class="section section--white">
+  <div class="container content-wide">
+    <div class="grid-4" style="margin-bottom:40px">
+      {% for c in contacts %}
+      <a href="{{ c.href }}" target="_blank" rel="noopener" class="contact-card" data-reveal="3d">
+        <span class="contact-card__ico"><i data-lucide="{{ c.icon }}"></i></span>
+        <div class="contact-card__title">{{ c.title }}</div>
+        <div class="contact-card__value">{{ c.value }}</div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div class="contact-actions" data-reveal>
+      <a href="https://wa.me/{{ brand.whatsapp_primary }}?text={{ brand.wa_message | urlencode }}" target="_blank" rel="noopener" class="btn btn--wa-solid"><i data-lucide="message-circle"></i>Escribir por WhatsApp</a>
+      <a href="{{ brand.instagram_url }}" target="_blank" rel="noopener" class="social-link--brand" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.4.5.6.2 1 .5 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.5 2.4-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.4-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.9.5-2.4.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7 0 5.7.1 4.9.2 4.1.5c-.8.3-1.5.7-2.2 1.4C1.2 2.6.8 3.3.5 4.1.2 4.9.1 5.7 0 7 0 8.3 0 8.7 0 12s0 3.7.1 5c.1 1.3.2 2.1.5 2.9.3.8.7 1.5 1.4 2.2.7.7 1.4 1.1 2.2 1.4.8.3 1.6.4 2.9.5 1.3.1 1.7.1 5 .1s3.7 0 5-.1c1.3-.1 2.1-.2 2.9-.5.8-.3 1.5-.7 2.2-1.4.7-.7 1.1-1.4 1.4-2.2.3-.8.4-1.6.5-2.9.1-1.3.1-1.7.1-5s0-3.7-.1-5c-.1-1.3-.2-2.1-.5-2.9-.3-.8-.7-1.5-1.4-2.2C20.4 1.2 19.7.8 18.9.5 18.1.2 17.3.1 16 .1 14.7 0 14.3 0 12 0z"/><path fill="currentColor" d="M12 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 1 0 12 5.8m0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8m6.4-10.5a1.4 1.4 0 1 1-2.9 0 1.4 1.4 0 0 1 2.9 0"/></svg>
+        Ver Instagram
+      </a>
+      <a href="{{ brand.facebook_url }}" target="_blank" rel="noopener" class="social-link--brand" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8v2.2h3.3l-.5 3.5h-2.8V24C19.6 23.1 24 18.1 24 12.1z"/></svg>
+        Ver Facebook
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Oscuro: CTA inscripción (centrado + se une al footer) -->
+<section class="section section--dark section--merge-footer" id="cta-inscripcion">
+  <div class="container">
+    <div class="section-head" data-reveal style="margin-bottom:28px">
+      <div class="eyebrow">Próximo paso</div>
+      <h2 class="section-title">¿Listo para inscribirte?</h2>
+      <p class="section-sub text-justify-center">Revisa los programas abiertos y completa tu solicitud en línea.</p>
+    </div>
+    <div class="center-cta" data-reveal>
+      <a href="/programas" class="btn btn--ghost-light">Ver programas</a>
+      <a href="/inscripcion" class="btn btn--primary">Ir a inscripción</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

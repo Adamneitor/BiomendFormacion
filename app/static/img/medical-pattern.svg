@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
+  <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cruz m�dica -->
+    <path d="M34 24v26 M21 37h26"/>
+    <!-- Coraz�n (salud) -->
+    <path d="M165 48c-8-5-13-11-13-17a6.5 6.5 0 0 1 13-2 6.5 6.5 0 0 1 13 2c0 6-5 12-13 17z"/>
+    <!-- Latido / pulso -->
+    <path d="M70 100h15l5-13 7 26 6-13h28"/>
+    <!-- Libro abierto (educaci�n) -->
+    <path d="M24 150c7-3 14-3 18 0 4-3 11-3 18 0v20c-7-3-14-3-18 0-4-3-11-3-18 0z M42 150v20"/>
+    <!-- Birrete de graduaci�n -->
+    <path d="M150 162l20 8 20-8-20-8z M190 170v10 M157 172v8c4 3 22 3 26 0v-8"/>
+    <!-- Estetoscopio (simplificado) -->
+    <path d="M120 28v8a10 10 0 0 0 20 0v-8 M130 46v10a12 12 0 0 0 24 0v-6"/>
+    <circle cx="154" cy="100" r="5"/>
+    <!-- C�psula / medicamento -->
+    <path d="M30 110l14 14a9 9 0 0 1-14 14 9 9 0 0 1-14-14z M37 117l-14 14"/>
+  </g>
+</svg>

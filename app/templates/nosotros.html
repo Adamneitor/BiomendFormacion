@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Nosotros — {{ brand.full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- 1 · Oscuro: Cabecera (izquierda) -->
+<section class="page-hero page-hero--left section--dark page-pad" id="nosotros">
+  <div class="container">
+    <div class="page-hero__inner" data-reveal>
+      <div class="breadcrumb"><a href="/">Inicio</a> <i data-lucide="chevron-right"></i> <span>Nosotros</span></div>
+      <div class="eyebrow">Sobre nosotros</div>
+      <h1 class="section-title section-title--lg">Sobre BIOMEND Formación Continua</h1>
+      <p class="section-sub">Institución dedicada al desarrollo académico de profesionales y estudiantes del área de la salud en República Dominicana.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Blanco: Quiénes somos -->
+<section class="section section--white">
+  <div class="container">
+    <div class="about-layout">
+      <div class="about-layout__copy" data-reveal="left">
+        <div class="eyebrow">Quiénes somos</div>
+        <h2 class="section-title section-title--left">Formación con vocación de servicio</h2>
+        <p class="text-justify">En BIOMEND Formación Continua promovemos espacios de capacitación orientados al fortalecimiento de los conocimientos y las competencias de profesionales y estudiantes del área de la salud.</p>
+        <p class="text-justify">Nuestra oferta académica integra formación teórica y práctica mediante programas impartidos por profesionales especializados, con el objetivo de contribuir al desarrollo profesional continuo de nuestros participantes en República Dominicana.</p>
+        <div class="split__stats" style="margin-top:28px">
+          {% for s in hero_stats %}
+          <div>
+            <div class="stat__value">{{ s.value }}</div>
+            <div class="stat__label">{{ s.label }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="about-layout__media" data-reveal="right">
+        <div class="split__media-frame"></div>
+        <div class="split__media-img">
+          <img src="{{ static_url(graduates[1].src) }}" alt="{{ graduates[1].alt }}" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Oscuro: Modalidades -->
+<section class="section section--dark">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div class="eyebrow">Oferta académica</div>
+      <h2 class="section-title">Modalidades de formación</h2>
+      <p class="section-sub text-justify-center">Diplomados, cursos, seminarios y más formatos pensados para tu ritmo profesional.</p>
+    </div>
+    <div class="grid-3">
+      {% for m in modalities %}
+      <div class="modality modality--on-dark" data-reveal="3d">
+        <span class="modality__ico"><i data-lucide="{{ m.icon }}"></i></span>
+        <div>
+          <h4 class="modality__title">{{ m.title }}</h4>
+          <p class="modality__desc">{{ m.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 4 · Blanco: Por qué BIOMEND -->
+<section class="section section--white">
+  <div class="container">
+    <div class="section-head" data-reveal style="margin-bottom:56px">
+      <div class="eyebrow">Por qué BIOMEND</div>
+      <h2 class="section-title section-title--lg">Razones para elegirnos</h2>
+      <p class="section-sub">Una experiencia de formación pensada para tu crecimiento profesional.</p>
+    </div>
+    <div class="marquee" data-reveal="zoom">
+      <div class="bm-track bm-track--fwd">
+        {% for b in benefits + benefits %}
+        <div class="benefit-chip">
+          <span class="benefit-chip__ico"><i data-lucide="{{ b.icon }}"></i></span>
+          <div>
+            <div class="benefit-chip__title">{{ b.title }}</div>
+            <div class="benefit-chip__desc">{{ b.description }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="bm-track bm-track--rev">
+        {% set benefits_rev = benefits | reverse | list %}
+        {% for b in benefits_rev + benefits_rev %}
+        <div class="benefit-chip">
+          <span class="benefit-chip__ico"><i data-lucide="{{ b.icon }}"></i></span>
+          <div>
+            <div class="benefit-chip__title">{{ b.title }}</div>
+            <div class="benefit-chip__desc">{{ b.description }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscripciones — Admin BIOMEND</title>
+  <style>
+    :root { --teal:#2C9BA5; --ink:#102a2e; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: system-ui, sans-serif; background:#f4f7f8; color:var(--ink); }
+    header { background:#0f2a2e; color:#fff; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    header a, header button { color:#fff; text-decoration:none; background:transparent; border:1px solid rgba(255,255,255,.35); border-radius:8px; padding:8px 12px; cursor:pointer; font:inherit; }
+    main { padding:22px; max-width:1200px; margin:0 auto; }
+    h1 { margin:0 0 6px; font-size:1.4rem; }
+    .meta { color:#567; margin-bottom:18px; }
+    .err { background:#fdecea; color:#b71c1c; padding:12px; border-radius:10px; margin-bottom:16px; }
+    .table-wrap { overflow:auto; background:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(16,42,46,.08); }
+    table { width:100%; border-collapse:collapse; min-width:900px; }
+    th, td { padding:12px 14px; text-align:left; border-bottom:1px solid #e6eef0; font-size:.92rem; }
+    th { background:#eef6f7; font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; color:#456; }
+    tr:hover td { background:#f8fbfc; }
+    a.detail { color:var(--teal); font-weight:600; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <strong>BIOMEND Admin</strong>
+      <span style="opacity:.7; margin-left:10px;">{{ admin_user }}</span>
+    </div>
+    <form method="post" action="/admin/logout">
+      <button type="submit">Cerrar sesión</button>
+    </form>
+  </header>
+  <main>
+    <h1>Inscripciones</h1>
+    <p class="meta">{{ rows|length }} registro(s) recientes</p>
+    {% if db_error %}<div class="err">{{ db_error }}</div>{% endif %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Programa</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.Id_Inscripcion }}</td>
+            <td>{{ r.Fecha_Envio }}</td>
+            <td>{{ r.Nombres }} {{ r.Apellidos }}</td>
+            <td>{{ r.Correo }}</td>
+            <td>{{ r.Telefono }}</td>
+            <td>{{ r.Nombre_Programa }}</td>
+            <td>{{ r.Nombre_Estado }}</td>
+            <td><a class="detail" href="/admin/inscripcion/{{ r.Id_Inscripcion }}">Ver</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8">Aún no hay inscripciones.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

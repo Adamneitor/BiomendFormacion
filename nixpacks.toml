@@ -1,0 +1,5 @@
+# Forzar stack Python (ignorar package.json del prototipo Vite legado)
+providers = ["python"]
+
+[start]
+cmd = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'"

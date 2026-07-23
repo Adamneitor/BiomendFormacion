@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Preguntas frecuentes — {{ brand.full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- 1 · Oscuro: Cabecera -->
+<section class="page-hero section--dark page-pad" id="faq">
+  <div class="container">
+    <div class="page-hero__inner" data-reveal>
+      <div class="breadcrumb"><a href="/">Inicio</a> <i data-lucide="chevron-right"></i> <span>Preguntas frecuentes</span></div>
+      <div class="eyebrow">FAQ</div>
+      <h1 class="section-title section-title--lg">Preguntas frecuentes</h1>
+      <p class="section-sub">Respuestas claras sobre inscripción, modalidades, documentos y certificados de nuestros programas de formación continua.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Blanco: Acordeón -->
+<section class="section section--white">
+  <div class="container">
+    <div class="content-narrow">
+      <div class="faq-list" data-faq-group>
+        {% for q in faqs %}
+        <div class="faq-item {{ 'is-open' if loop.first else '' }}" data-faq data-reveal>
+          <button class="faq-item__btn" type="button">
+            <span class="faq-item__q">{{ q.question }}</span>
+            <span class="faq-item__ico"><i data-lucide="chevron-down"></i></span>
+          </button>
+          <div class="faq-item__body text-justify">{{ q.answer }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Inscripción — {{ brand.full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- 1 · Oscuro: Cabecera -->
+<section class="page-hero section--dark page-pad" id="inscripcion">
+  <div class="container">
+    <div class="page-hero__inner" data-reveal>
+      <div class="breadcrumb"><a href="/">Inicio</a> <i data-lucide="chevron-right"></i> <a href="/programas">Programas</a> <i data-lucide="chevron-right"></i> <span>Inscripción</span></div>
+      <div class="eyebrow">Inscripción</div>
+      <h1 class="section-title section-title--lg">Formulario de inscripción</h1>
+      <p class="section-sub">Completa tus datos para reservar tu cupo. Los campos marcados con <span style="color:#ffb4a8">*</span> son obligatorios.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Blanco: Formulario -->
+<section class="section section--white">
+  <div class="container">
+    <div class="content-form">
+    {% if programa %}
+    <div class="enroll-selected" data-reveal>
+      <span class="enroll-selected__ico"><i data-lucide="clipboard-check"></i></span>
+      <div>
+        <div class="enroll-selected__label">Programa seleccionado</div>
+        <div class="enroll-selected__name">{{ programa }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="enroll-card" data-reveal>
+      {% if submitted %}
+      <div class="enroll-success">
+        <span class="enroll-success__ico"><i data-lucide="check-check"></i></span>
+        <h3 class="enroll-success__title">¡Solicitud enviada!</h3>
+        <p class="enroll-success__text text-justify">Tu inscripción está en proceso de validación. Una vez aprobada, recibirás el enlace de acceso por correo electrónico y WhatsApp.</p>
+        <a href="/inscripcion" class="btn btn--outline btn--sm">Enviar otra inscripción</a>
+      </div>
+      {% else %}
+      {% if form_error %}
+      <div class="enroll-error" role="alert" style="margin:0 0 20px;padding:14px 16px;border-radius:12px;background:#FDECEC;color:#9B1C1C;font:600 14.5px/1.4 var(--font-body)">
+        {% if form_error == 'rate' %}Has enviado demasiadas solicitudes. Espera unos minutos e inténtalo de nuevo.
+        {% elif form_error == 'csrf' %}La sesión expiró o la solicitud no es válida. Recarga la página e inténtalo de nuevo.
+        {% elif form_error == 'archivo' %}Revisa los documentos: solo PDF/JPG/PNG de máximo 5 MB y contenido válido.
+        {% elif form_error == 'programa' %}Selecciona un programa válido de la lista.
+        {% elif form_error == 'config' %}El servicio de inscripción no está disponible temporalmente.
+        {% elif form_error == 'guardar' %}No pudimos guardar tu solicitud. Inténtalo de nuevo en unos minutos.
+        {% else %}Revisa los datos del formulario e inténtalo de nuevo.
+        {% endif %}
+      </div>
+      {% endif %}
+      <form class="form" method="post" action="/inscripcion" enctype="multipart/form-data" autocomplete="on">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <div class="form__section-label">Información personal</div>
+        <div class="form__grid">
+          {% for f in fields %}
+          <label class="field">
+            <span class="field__label">{{ f.label }} <span class="req">*</span></span>
+            <input class="bm-field" type="{{ f.type }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}" required maxlength="{% if f.name == 'correo' %}254{% elif f.name in ['nombres','apellidos'] %}120{% elif f.name == 'telefono' %}32{% elif f.name in ['institucion','profesion'] %}200{% elif f.name == 'pais' %}100{% else %}120{% endif %}" />
+          </label>
+          {% endfor %}
+          <label class="field">
+            <span class="field__label">Idioma preferido <span class="req">*</span></span>
+            <select class="bm-field" name="idioma" required>
+              <option value="">Selecciona…</option>
+              <option>Español</option>
+              <option>Inglés</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">Programa de interés <span class="req">*</span></span>
+            <select class="bm-field" name="programa" required>
+              <option value="">Selecciona…</option>
+              {% for p in programs %}
+              <option value="{{ p.enroll_name }}" {{ 'selected' if programa == p.enroll_name else '' }}>{{ p.select_label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <div class="form__section-label">Documentos requeridos</div>
+        <p class="form__note">Formatos aceptados: PDF, JPG, PNG · Tamaño máximo: 5 MB por archivo.</p>
+        <div class="doc-grid doc-grid--2">
+          {% for d in docs %}
+          <label class="doc">
+            <span class="doc__ico"><i data-lucide="{{ d.icon }}"></i></span>
+            <div class="doc__label">{{ d.label }} <span class="req">*</span></div>
+            <div class="doc__hint">PDF, JPG, PNG · máx. 5 MB</div>
+            <input type="file" name="{{ d.name }}" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required />
+          </label>
+          {% endfor %}
+        </div>
+
+        <div class="form__section-label">Certificado</div>
+        <div class="cert-q">¿Te interesa recibir certificado? <span class="req">*</span></div>
+        <div class="cert-list">
+          {% for c in cert_options %}
+          <label class="cert-opt">
+            <input type="radio" name="certificado" value="{{ c }}" required />
+            <span>{{ c }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <p class="form__note" style="margin-bottom:30px">La emisión del certificado estará sujeta al cumplimiento de los requisitos establecidos para el programa.</p>
+
+        <div class="form__section-label">Enlace de acceso al programa</div>
+        <div class="access-box access-box--locked" aria-disabled="true">
+          <div class="access-box__blur">
+            <div class="access-row">
+              <input readonly value="Disponible tras validación" tabindex="-1" aria-hidden="true" />
+              <button type="button" class="access-copy" disabled tabindex="-1"><i data-lucide="copy"></i><span>Copiar enlace</span></button>
+            </div>
+            <div class="access-note"><i data-lucide="info"></i><span>Este enlace será compartido una vez la inscripción haya sido validada.</span></div>
+          </div>
+          <div class="access-box__overlay">
+            <i data-lucide="lock"></i>
+            <strong>Próximamente</strong>
+            <span>El enlace de acceso aún no está disponible.</span>
+          </div>
+        </div>
+
+        <div class="consents">
+          <label class="consent"><input type="checkbox" name="consentimiento_veracidad" value="1" required /><span>Confirmo que la información proporcionada es correcta. <span class="req">*</span></span></label>
+          <label class="consent"><input type="checkbox" name="consentimiento_datos" value="1" required /><span>Autorizo el uso de mis datos para gestionar mi inscripción y recibir información relacionada con el programa. <span class="req">*</span></span></label>
+          <label class="consent"><input type="checkbox" name="consentimiento_marketing" value="1" /><span>Deseo recibir información sobre futuros cursos, talleres y seminarios.</span></label>
+        </div>
+
+        <button type="submit" class="form__submit">Completar inscripción <i data-lucide="send"></i></button>
+      </form>
+      {% endif %}
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Oscuro: Ayuda (unido al footer, igual que Contacto) -->
+<section class="section section--dark section--merge-footer" id="ayuda-inscripcion">
+  <div class="container">
+    <div class="section-head" data-reveal style="margin-bottom:28px">
+      <div class="eyebrow">¿Necesitas ayuda?</div>
+      <h2 class="section-title">Te acompañamos en el proceso</h2>
+      <p class="section-sub text-justify-center">Si tienes dudas sobre documentos o el programa adecuado, contáctanos.</p>
+    </div>
+    <div class="center-cta" data-reveal>
+      <a href="/faq" class="btn btn--ghost-light">Ver FAQ</a>
+      <a href="https://wa.me/{{ brand.whatsapp_primary }}?text={{ brand.wa_message | urlencode }}" target="_blank" rel="noopener" class="btn btn--wa"><i data-lucide="message-circle"></i>WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

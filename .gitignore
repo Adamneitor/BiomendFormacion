@@ -1,0 +1,53 @@
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+node_modules/
+dist/
+build/
+.DS_Store
+Thumbs.db
+*.log
+uvi.out
+uvi.err
+
+# Prototipo Vite/React legado
+src/
+guidelines/
+package.json
+package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+vite.config.ts
+postcss.config.mjs
+/index.html
+default_shadcn_theme.css
+ATTRIBUTIONS.md
+*.zip
+_extract_avales.py
+
+# Windows / OneDrive
+desktop.ini
+
+# Datos sensibles / PII
+storage/*
+!storage/private/
+storage/private/*
+!storage/private/.gitkeep
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+app/inscripciones.tsv
+app/mensajes_contacto.tsv
+*.tsv
+!db/**
+
+# Credenciales
+*.pem
+*.p12
+*.key
+Credenciales*

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>{% block title %}{{ brand.full_name }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}BIOMEND Formación Continua: programas de formación continua en el área de la salud — diplomados, cursos, talleres, seminarios, conferencias, jornadas científicas y simposios en República Dominicana.{% endblock %}" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ static_url('img/favicon-16.png') }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ static_url('img/favicon-32.png') }}" />
+  <link rel="icon" type="image/png" sizes="48x48" href="{{ static_url('img/favicon-48.png') }}" />
+  <link rel="shortcut icon" type="image/png" href="{{ static_url('img/favicon.png') }}" />
+  <link rel="apple-touch-icon" href="{{ static_url('img/apple-touch-icon.png') }}" />
+  <link rel="stylesheet" href="{{ static_url('css/styles.css') }}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="page-{{ active_page }}">
+
+  <!-- ══ NAV ══ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo" aria-label="{{ brand.full_name }}">
+        <img src="{{ static_url('img/logo.png') }}" alt="{{ brand.full_name }}" />
+      </a>
+
+      <nav class="nav__links">
+        {% for key, label, href in nav_links %}
+        <a href="{{ href }}" class="nav__link {{ 'is-active' if active_page == key else '' }}">{{ label }}</a>
+        {% endfor %}
+      </nav>
+
+      <div class="nav__actions">
+        <a href="/inscripcion" class="nav__cta">Inscribirme</a>
+        <button class="nav__menu-btn" id="navToggle" aria-label="Menú" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav__mobile" id="navMobile">
+      <div class="nav__mobile-inner">
+        {% for key, label, href in nav_links %}
+        <a href="{{ href }}" class="nav__mobile-link {{ 'is-active' if active_page == key else '' }}">{{ label }}</a>
+        {% endfor %}
+        <a href="/inscripcion" class="nav__mobile-cta">Inscribirme</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ══ FOOTER (mismo tono oscuro que las secciones) ══ -->
+  <footer class="footer section--dark">
+    <div class="container footer__inner">
+      <div class="footer__grid">
+        <div>
+          <img src="{{ static_url('img/logo-footer.png') }}" alt="{{ brand.name }}" class="footer__logo" />
+          <p class="footer__brand-name">{{ brand.full_name }}</p>
+          <p class="footer__brand-text">{{ brand.tagline }}</p>
+        </div>
+
+        <div>
+          <div class="footer__title">Navegación</div>
+          <div class="footer__links">
+            {% for key, label, href in nav_links %}
+            <a href="{{ href }}">{{ label }}</a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div>
+          <div class="footer__title">Avales</div>
+          <div class="footer__avales">
+            <img src="{{ static_url('img/avales/cediem.png') }}" alt="CEDIEM — Centro Diagnóstico y Especialidades Médicas" class="footer__aval" />
+            <img src="{{ static_url('img/avales/utesur.png') }}" alt="UTESUR — Universidad Tecnológica del Sur" class="footer__aval footer__aval--utesur" />
+          </div>
+        </div>
+
+        <div>
+          <div class="footer__title">Contacto</div>
+          <div class="footer__contact">
+            <div class="footer__contact-row">
+              <i data-lucide="message-circle"></i>
+              <div>{{ brand.whatsapp_primary_label }}<br />{{ brand.whatsapp_secondary_label }}</div>
+            </div>
+            <div class="footer__contact-row">
+              <i data-lucide="globe"></i>
+              <a href="{{ brand.website }}" target="_blank" rel="noopener">{{ brand.website_label }}</a>
+            </div>
+            <div class="footer__social">
+              <a href="{{ brand.instagram_url }}" target="_blank" rel="noopener" class="social-brand" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.4.5.6.2 1 .5 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.5 2.4-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.4-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.9.5-2.4.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7 0 5.7.1 4.9.2 4.1.5c-.8.3-1.5.7-2.2 1.4C1.2 2.6.8 3.3.5 4.1.2 4.9.1 5.7 0 7 0 8.3 0 8.7 0 12s0 3.7.1 5c.1 1.3.2 2.1.5 2.9.3.8.7 1.5 1.4 2.2.7.7 1.4 1.1 2.2 1.4.8.3 1.6.4 2.9.5 1.3.1 1.7.1 5 .1s3.7 0 5-.1c1.3-.1 2.1-.2 2.9-.5.8-.3 1.5-.7 2.2-1.4.7-.7 1.1-1.4 1.4-2.2.3-.8.4-1.6.5-2.9.1-1.3.1-1.7.1-5s0-3.7-.1-5c-.1-1.3-.2-2.1-.5-2.9-.3-.8-.7-1.5-1.4-2.2C20.4 1.2 19.7.8 18.9.5 18.1.2 17.3.1 16 .1 14.7 0 14.3 0 12 0z"/><path fill="currentColor" d="M12 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 1 0 12 5.8m0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8m6.4-10.5a1.4 1.4 0 1 1-2.9 0 1.4 1.4 0 0 1 2.9 0"/></svg>
+              </a>
+              <a href="{{ brand.facebook_url }}" target="_blank" rel="noopener" class="social-brand" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8v2.2h3.3l-.5 3.5h-2.8V24C19.6 23.1 24 18.1 24 12.1z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>&copy; {{ year }} {{ brand.full_name }}. Todos los derechos reservados.</span>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/{{ brand.whatsapp_primary }}?text={{ brand.wa_message | urlencode }}" target="_blank" rel="noopener" class="wa-float" aria-label="WhatsApp">
+    <i data-lucide="message-circle"></i>
+  </a>
+
+  <script src="{{ static_url('js/lucide.min.js') }}"></script>
+  <script src="{{ static_url('js/main.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

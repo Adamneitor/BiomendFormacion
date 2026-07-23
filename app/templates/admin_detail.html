@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscripción #{{ item.Id_Inscripcion }} — Admin</title>
+  <style>
+    :root { --teal:#2C9BA5; --ink:#102a2e; }
+    body { margin:0; font-family: system-ui, sans-serif; background:#f4f7f8; color:var(--ink); }
+    header { background:#0f2a2e; color:#fff; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    header a, header button { color:#fff; text-decoration:none; background:transparent; border:1px solid rgba(255,255,255,.35); border-radius:8px; padding:8px 12px; cursor:pointer; font:inherit; }
+    main { padding:22px; max-width:860px; margin:0 auto; }
+    .card { background:#fff; border-radius:14px; padding:22px; box-shadow:0 8px 24px rgba(16,42,46,.08); }
+    h1 { margin:0 0 16px; font-size:1.3rem; }
+    dl { display:grid; grid-template-columns:160px 1fr; gap:10px 14px; margin:0; }
+    dt { color:#678; font-size:.85rem; }
+    dd { margin:0; font-weight:600; }
+    ul { padding-left:18px; }
+    .docs a { color:var(--teal); font-weight:600; }
+    .back { display:inline-block; margin-bottom:14px; color:var(--teal); text-decoration:none; font-weight:600; }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>BIOMEND Admin</strong></div>
+    <a href="/admin">Volver al listado</a>
+  </header>
+  <main>
+    <a class="back" href="/admin">← Inscripciones</a>
+    <div class="card">
+      <h1>Inscripción #{{ item.Id_Inscripcion }}</h1>
+      <dl>
+        <dt>UUID</dt><dd>{{ item.Uuid_Inscripcion }}</dd>
+        <dt>Fecha</dt><dd>{{ item.Fecha_Envio }}</dd>
+        <dt>Estado</dt><dd>{{ item.Nombre_Estado }}</dd>
+        <dt>Programa</dt><dd>{{ item.Nombre_Programa }}</dd>
+        <dt>Nombre</dt><dd>{{ item.Nombres }} {{ item.Apellidos }}</dd>
+        <dt>Correo</dt><dd>{{ item.Correo }}</dd>
+        <dt>Teléfono</dt><dd>{{ item.Telefono }}</dd>
+        <dt>Institución</dt><dd>{{ item.Institucion }}</dd>
+        <dt>Profesión</dt><dd>{{ item.Profesion }}</dd>
+        <dt>País / Ciudad</dt><dd>{{ item.Pais }} / {{ item.Ciudad }}</dd>
+        <dt>Idioma</dt><dd>{{ item.Nombre_Idioma }}</dd>
+        <dt>Certificado</dt><dd>{{ item.Nombre_Preferencia }}</dd>
+      </dl>
+      <h2 style="margin-top:28px; font-size:1.05rem;">Documentos</h2>
+      <ul class="docs">
+        {% for d in item.documentos %}
+        <li>
+          {{ d.Nombre_Tipo_Documento }} —
+          <a href="/admin/documento/{{ item.Id_Inscripcion }}/{{ d.Nombre_Almacenado }}">{{ d.Nombre_Original }}</a>
+          ({{ d.Tamano_Bytes }} bytes)
+        </li>
+        {% else %}
+        <li>Sin documentos.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </main>
+</body>
+</html>
