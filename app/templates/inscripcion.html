@@ -71,10 +71,10 @@
           </label>
           <label class="field">
             <span class="field__label">Programa de interés <span class="req">*</span></span>
-            <select class="bm-field" name="programa" required>
+            <select class="bm-field" name="programa" id="programaSelect" required>
               <option value="">Selecciona…</option>
               {% for p in programs %}
-              <option value="{{ p.enroll_name }}" {{ 'selected' if programa == p.enroll_name else '' }}>{{ p.select_label }}</option>
+              <option value="{{ p.slug }}" data-offers-cert="{{ '1' if p.offers_certificate else '0' }}" {{ 'selected' if programa_slug == p.slug else '' }}>{{ p.select_label }}</option>
               {% endfor %}
             </select>
           </label>
@@ -93,17 +93,22 @@
           {% endfor %}
         </div>
 
-        <div class="form__section-label">Certificado</div>
-        <div class="cert-q">¿Te interesa recibir certificado? <span class="req">*</span></div>
-        <div class="cert-list">
-          {% for c in cert_options %}
-          <label class="cert-opt">
-            <input type="radio" name="certificado" value="{{ c }}" required />
-            <span>{{ c }}</span>
-          </label>
-          {% endfor %}
+        <div id="certSection" {% if not offers_certificate %}hidden{% endif %}>
+          <div class="form__section-label">Certificado</div>
+          <div class="cert-q">¿Te interesa recibir certificado? <span class="req">*</span></div>
+          <div class="cert-list">
+            {% for c in cert_options %}
+            <label class="cert-opt">
+              <input type="radio" name="certificado" value="{{ c }}" {% if offers_certificate %}required{% endif %} />
+              <span>{{ c }}</span>
+            </label>
+            {% endfor %}
+          </div>
+          <p class="form__note" style="margin-bottom:30px">La emisión del certificado estará sujeta al cumplimiento de los requisitos establecidos para el programa.</p>
         </div>
-        <p class="form__note" style="margin-bottom:30px">La emisión del certificado estará sujeta al cumplimiento de los requisitos establecidos para el programa.</p>
+        {% if not offers_certificate %}
+        <input type="hidden" name="certificado" id="certHidden" value="No deseo recibir certificado" />
+        {% endif %}
 
         <div class="form__section-label">Enlace de acceso al programa</div>
         <div class="access-box access-box--locked" aria-disabled="true">
@@ -150,4 +155,39 @@
   </div>
 </section>
 
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  var select = document.getElementById('programaSelect');
+  var section = document.getElementById('certSection');
+  if (!select || !section) return;
+
+  function syncCert() {
+    var opt = select.options[select.selectedIndex];
+    var offers = opt && opt.getAttribute('data-offers-cert') === '1';
+    section.hidden = !offers;
+    section.querySelectorAll('input[type="radio"][name="certificado"]').forEach(function (el) {
+      el.required = offers;
+      if (!offers) el.checked = false;
+    });
+    var hidden = document.getElementById('certHidden');
+    if (!offers) {
+      if (!hidden) {
+        hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'certificado';
+        hidden.id = 'certHidden';
+        hidden.value = 'No deseo recibir certificado';
+        select.form.appendChild(hidden);
+      }
+    } else if (hidden) {
+      hidden.remove();
+    }
+  }
+  select.addEventListener('change', syncCert);
+  syncCert();
+})();
+</script>
 {% endblock %}

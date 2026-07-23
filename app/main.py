@@ -30,7 +30,6 @@ from app.repositories.inscripcion import (
     DocumentoPayload,
     InscripcionPayload,
     guardar_inscripcion,
-    resolver_slug_programa,
 )
 from app.security import (
     FIELD_LIMITS,
@@ -96,7 +95,7 @@ app.include_router(admin_router)
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 templates.env.auto_reload = True
 templates.env.cache = None
-ASSET_VERSION = "20260723a"
+ASSET_VERSION = "20260723b"
 
 
 def static_url(path: str) -> str:
@@ -242,6 +241,8 @@ PROGRAMS = [
             "https://wa.me/18098970552?text=Hola,%20deseo%20información%20sobre%20la%20"
             "Conferencia%20de%20Biomarcadores%20Modernos"
         ),
+        "offers_certificate": False,
+        "is_free": True,
     },
     {
         "slug": "toma-muestra-sanguinea",
@@ -284,6 +285,8 @@ PROGRAMS = [
             "https://wa.me/18098970552?text=Hola,%20deseo%20información%20sobre%20el%20"
             "Curso%20de%20Toma%20de%20Muestra%20Sanguínea"
         ),
+        "offers_certificate": True,
+        "is_free": False,
     },
     {
         "slug": "fenotipo-rh-kell",
@@ -321,10 +324,26 @@ PROGRAMS = [
             "https://wa.me/18098970552?text=Hola,%20deseo%20información%20sobre%20el%20"
             "Seminario%20de%20Fenotipo%20Rh%20y%20Kell"
         ),
+        "offers_certificate": True,
+        "is_free": False,
     },
 ]
 
 PROGRAMS_BY_SLUG = {p["slug"]: p for p in PROGRAMS}
+CERT_DEFAULT_NO = "No deseo recibir certificado"
+
+
+def resolve_program(value: str) -> dict | None:
+    """Resuelve programa por slug (preferido) o enroll_name (compatibilidad)."""
+    raw = (value or "").strip()
+    if not raw:
+        return None
+    if raw in PROGRAMS_BY_SLUG:
+        return PROGRAMS_BY_SLUG[raw]
+    for p in PROGRAMS:
+        if p["enroll_name"] == raw or p["select_label"] == raw:
+            return p
+    return None
 
 # ----------------------------------------------------------------------------
 # Preguntas frecuentes
@@ -487,17 +506,19 @@ def programas(request: Request):
 @app.get("/inscripcion", response_class=HTMLResponse)
 def inscripcion(request: Request, programa: str = "", ok: int = 0, err: str = ""):
     ctx = base_context(request, "inscripcion")
-    # Sanitizar query programa (solo whitelist)
-    allowed_names = {p["enroll_name"] for p in PROGRAMS}
-    if programa and programa not in allowed_names:
-        programa = ""
+    selected = resolve_program(programa)
+    programa_slug = selected["slug"] if selected else ""
+    programa_label = selected["select_label"] if selected else ""
+    offers_certificate = bool(selected["offers_certificate"]) if selected else True
     ctx.update({
         "programs": PROGRAMS,
         "fields": ENROLL_FIELDS,
         "docs": ENROLL_DOCS,
         "cert_options": CERT_OPTIONS,
-        "access_link": "",  # nunca filtrar URL real al cliente
-        "programa": programa,
+        "access_link": "",
+        "programa": programa_label,
+        "programa_slug": programa_slug,
+        "offers_certificate": offers_certificate,
         "submitted": ok == 1,
         "form_error": err,
     })
@@ -518,7 +539,7 @@ async def inscripcion_submit(
     ciudad: str = Form(...),
     idioma: str = Form(...),
     programa: str = Form(...),
-    certificado: str = Form(...),
+    certificado: str = Form(""),
     consentimiento_datos: str = Form(...),
     consentimiento_veracidad: str = Form(...),
     doc_cedula: UploadFile = File(...),
@@ -549,14 +570,19 @@ async def inscripcion_submit(
         ciudad = sanitize_text(ciudad, FIELD_LIMITS["ciudad"])
         idioma = sanitize_text(idioma, FIELD_LIMITS["idioma"])
         programa = sanitize_text(programa, FIELD_LIMITS["programa"])
-        certificado = sanitize_text(certificado, FIELD_LIMITS["certificado"])
+        certificado = sanitize_text(certificado or "", FIELD_LIMITS["certificado"])
     except Exception:
         return RedirectResponse(url="/inscripcion?err=validacion", status_code=303)
 
-    allowed_programs = {p["enroll_name"] for p in PROGRAMS}
-    if programa not in allowed_programs:
+    selected = resolve_program(programa)
+    if selected is None:
         return RedirectResponse(url="/inscripcion?err=programa", status_code=303)
-    if certificado not in CERT_OPTIONS:
+    programa_nombre = selected["enroll_name"]
+    programa_slug = selected["slug"]
+
+    if not selected.get("offers_certificate", True):
+        certificado = CERT_DEFAULT_NO
+    elif certificado not in CERT_OPTIONS:
         return RedirectResponse(url="/inscripcion?err=validacion", status_code=303)
     if idioma not in {"Español", "Inglés"}:
         return RedirectResponse(url="/inscripcion?err=validacion", status_code=303)
@@ -592,7 +618,6 @@ async def inscripcion_submit(
     def clean(value: str) -> str:
         return value.replace("\t", " ").replace("\n", " ").strip()
 
-    slug = resolver_slug_programa(programa, PROGRAMS)
     user_agent = (request.headers.get("user-agent") or "")[:500]
 
     id_inscripcion = None
@@ -622,8 +647,8 @@ async def inscripcion_submit(
                     pais=pais,
                     ciudad=ciudad,
                     idioma=idioma,
-                    nombre_programa=programa,
-                    slug_programa=slug,
+                    nombre_programa=programa_nombre,
+                    slug_programa=programa_slug,
                     certificado=certificado,
                     documentos=docs,
                     ip_origen=ip if ip != "unknown" else None,
@@ -636,7 +661,7 @@ async def inscripcion_submit(
                 datetime.now().isoformat(timespec="seconds"),
                 clean(nombres), clean(apellidos), clean(correo), clean(telefono),
                 clean(institucion), clean(profesion), clean(pais), clean(ciudad),
-                clean(idioma), clean(programa), clean(certificado),
+                clean(idioma), clean(programa_nombre), clean(certificado),
                 " | ".join(m[1] for m in saved_meta),
             ]) + "\n"
             with INSCRIPTIONS_FILE.open("a", encoding="utf-8") as fh:
@@ -662,7 +687,7 @@ async def inscripcion_submit(
             pais=pais,
             ciudad=ciudad,
             idioma=idioma,
-            programa=programa,
+            programa=programa_nombre,
             certificado=certificado,
             id_inscripcion=id_inscripcion,
             attachments=attachments,
@@ -725,5 +750,4 @@ def programa_detalle_redir(slug: str):
     program = PROGRAMS_BY_SLUG.get(slug)
     if program is None:
         return RedirectResponse(url="/programas", status_code=303)
-    from urllib.parse import quote
-    return RedirectResponse(url=f"/inscripcion?programa={quote(program['enroll_name'])}", status_code=303)
+    return RedirectResponse(url=f"/inscripcion?programa={program['slug']}", status_code=303)

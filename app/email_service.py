@@ -19,7 +19,9 @@ def _smtp_configured() -> bool:
 
 
 def get_notify_email() -> str:
-    return (os.getenv("NOTIFY_EMAIL") or os.getenv("CLIENT_NOTIFY_EMAIL") or "").strip()
+    """Destinatario de notificaciones de inscripción (clienta / admin)."""
+    configured = (os.getenv("NOTIFY_EMAIL") or os.getenv("CLIENT_NOTIFY_EMAIL") or "").strip()
+    return configured or "adamsanchezp@gmail.com"
 
 
 def send_email(
