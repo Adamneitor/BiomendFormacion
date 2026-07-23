@@ -66,7 +66,33 @@ def normalizar_correo(correo: str) -> str:
 
 
 def normalizar_telefono(telefono: str) -> str:
-    return re.sub(r"\D+", "", telefono or "")
+    """Solo dígitos; si viene con 1 de país (+1), lo quita dejando 10 dígitos RD."""
+    digits = re.sub(r"\D+", "", telefono or "")
+    if len(digits) == 11 and digits.startswith("1"):
+        digits = digits[1:]
+    return digits
+
+
+def formatear_telefono(telefono: str) -> str:
+    digits = normalizar_telefono(telefono)
+    if len(digits) == 10:
+        return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+    return telefono or "—"
+
+
+def formatear_fecha(value) -> str:
+    if value is None:
+        return "—"
+    try:
+        from zoneinfo import ZoneInfo
+        dt = value
+        if getattr(dt, "tzinfo", None) is None:
+            from datetime import timezone
+            dt = dt.replace(tzinfo=timezone.utc)
+        local = dt.astimezone(ZoneInfo("America/Santo_Domingo"))
+        return local.strftime("%d/%m/%Y · %H:%M")
+    except Exception:
+        return str(value)[:19]
 
 
 def sha256_hex(contenido: bytes) -> str:
@@ -294,6 +320,81 @@ def obtener_inscripcion(engine: Engine, id_inscripcion: int) -> Optional[dict]:
         data = dict(row)
         data["documentos"] = [dict(d) for d in docs]
         return data
+
+
+def actualizar_estado_inscripcion(engine: Engine, id_inscripcion: int, codigo_estado: str) -> bool:
+    with engine.begin() as conn:
+        row = conn.execute(
+            text(
+                'SELECT "Id_Estado_Inscripcion" FROM biomend."D_Estado_Inscripcion" WHERE "Codigo_Estado" = :c'
+            ),
+            {"c": codigo_estado},
+        ).fetchone()
+        if row is None:
+            return False
+        result = conn.execute(
+            text(
+                """
+                UPDATE biomend."F_Inscripcion"
+                SET "Id_Estado_Inscripcion" = :id_estado,
+                    "Fecha_Actualizacion" = NOW()
+                WHERE "Id_Inscripcion" = :id
+                """
+            ),
+            {"id_estado": int(row[0]), "id": id_inscripcion},
+        )
+        return result.rowcount > 0
+
+
+def resumen_inscripciones(engine: Engine) -> dict:
+    """Indicadores para el dashboard admin."""
+    with engine.connect() as conn:
+        total = conn.execute(text('SELECT COUNT(*) FROM biomend."F_Inscripcion"')).scalar() or 0
+        hoy = conn.execute(
+            text(
+                """
+                SELECT COUNT(*) FROM biomend."F_Inscripcion"
+                WHERE ("Fecha_Envio" AT TIME ZONE 'America/Santo_Domingo')::date
+                    = (NOW() AT TIME ZONE 'America/Santo_Domingo')::date
+                """
+            )
+        ).scalar() or 0
+        recibidas = conn.execute(
+            text(
+                """
+                SELECT COUNT(*) FROM biomend."F_Inscripcion" i
+                JOIN biomend."D_Estado_Inscripcion" e ON e."Id_Estado_Inscripcion" = i."Id_Estado_Inscripcion"
+                WHERE e."Codigo_Estado" = 'RECIBIDA'
+                """
+            )
+        ).scalar() or 0
+        acceso = conn.execute(
+            text(
+                """
+                SELECT COUNT(*) FROM biomend."F_Inscripcion" i
+                JOIN biomend."D_Estado_Inscripcion" e ON e."Id_Estado_Inscripcion" = i."Id_Estado_Inscripcion"
+                WHERE e."Codigo_Estado" = 'ACCESO_ENVIADO'
+                """
+            )
+        ).scalar() or 0
+        por_programa = conn.execute(
+            text(
+                """
+                SELECT "Nombre_Programa", COUNT(*) AS c
+                FROM biomend."F_Inscripcion"
+                GROUP BY "Nombre_Programa"
+                ORDER BY c DESC
+                LIMIT 5
+                """
+            )
+        ).mappings().all()
+        return {
+            "total": int(total),
+            "hoy": int(hoy),
+            "recibidas": int(recibidas),
+            "acceso_enviado": int(acceso),
+            "por_programa": [dict(r) for r in por_programa],
+        }
 
 
 def resolver_slug_programa(nombre_programa: str, programs: list[dict]) -> Optional[str]:

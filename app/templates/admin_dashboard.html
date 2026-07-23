@@ -4,69 +4,180 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inscripciones — Admin BIOMEND</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --teal:#2C9BA5; --ink:#102a2e; }
+    :root {
+      --teal:#2C9BA5; --teal-dark:#1E7A82; --ink:#0F2A2E; --muted:#5B7178;
+      --line:#E2ECEE; --paper:#F3F7F8; --card:#fff; --ok:#1B7F5A; --warn:#B7791F;
+    }
     * { box-sizing:border-box; }
-    body { margin:0; font-family: system-ui, sans-serif; background:#f4f7f8; color:var(--ink); }
-    header { background:#0f2a2e; color:#fff; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-    header a, header button { color:#fff; text-decoration:none; background:transparent; border:1px solid rgba(255,255,255,.35); border-radius:8px; padding:8px 12px; cursor:pointer; font:inherit; }
-    main { padding:22px; max-width:1200px; margin:0 auto; }
-    h1 { margin:0 0 6px; font-size:1.4rem; }
-    .meta { color:#567; margin-bottom:18px; }
-    .err { background:#fdecea; color:#b71c1c; padding:12px; border-radius:10px; margin-bottom:16px; }
-    .table-wrap { overflow:auto; background:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(16,42,46,.08); }
-    table { width:100%; border-collapse:collapse; min-width:900px; }
-    th, td { padding:12px 14px; text-align:left; border-bottom:1px solid #e6eef0; font-size:.92rem; }
-    th { background:#eef6f7; font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; color:#456; }
-    tr:hover td { background:#f8fbfc; }
-    a.detail { color:var(--teal); font-weight:600; text-decoration:none; }
+    body { margin:0; font-family:"Source Sans 3", system-ui, sans-serif; background:
+      radial-gradient(1200px 500px at 10% -10%, rgba(44,155,165,.18), transparent 55%),
+      linear-gradient(180deg, #EAF3F4 0%, var(--paper) 40%, #EEF3F4 100%);
+      color:var(--ink); min-height:100vh; }
+    header {
+      background: linear-gradient(120deg, #0B2226 0%, #12353A 55%, #1A4E55 100%);
+      color:#fff; padding:18px 28px; display:flex; justify-content:space-between; align-items:center;
+      gap:12px; flex-wrap:wrap; border-bottom:3px solid var(--teal);
+    }
+    .brand { display:flex; flex-direction:column; gap:2px; }
+    .brand strong { font-family:Manrope,sans-serif; font-size:1.15rem; letter-spacing:.02em; }
+    .brand span { opacity:.72; font-size:.9rem; }
+    header button, .btn {
+      font:600 14px/1 Manrope,sans-serif; border-radius:10px; padding:10px 14px; cursor:pointer;
+      border:1px solid rgba(255,255,255,.28); background:transparent; color:#fff; text-decoration:none;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    header button:hover { background:rgba(255,255,255,.08); }
+    main { padding:28px 22px 48px; max-width:1280px; margin:0 auto; }
+    .page-head { display:flex; justify-content:space-between; align-items:end; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+    h1 { margin:0; font:800 1.7rem/1.15 Manrope,sans-serif; }
+    .meta { margin:6px 0 0; color:var(--muted); }
+    .flash { background:#E8F7EF; color:var(--ok); padding:12px 14px; border-radius:12px; margin-bottom:16px; font-weight:600; }
+    .err { background:#FDECEC; color:#9B1C1C; padding:12px 14px; border-radius:12px; margin-bottom:16px; font-weight:600; }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+    .kpi {
+      background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+      box-shadow:0 10px 28px rgba(16,42,46,.06); position:relative; overflow:hidden;
+    }
+    .kpi::after { content:""; position:absolute; right:-18px; top:-18px; width:72px; height:72px; border-radius:50%; background:rgba(44,155,165,.1); }
+    .kpi__label { font:600 12.5px/1 Manrope,sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    .kpi__value { margin-top:10px; font:800 2rem/1 Manrope,sans-serif; color:var(--ink); }
+    .kpi__hint { margin-top:8px; color:var(--muted); font-size:.88rem; }
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:0 12px 34px rgba(16,42,46,.07); overflow:hidden; }
+    .panel__bar { padding:14px 18px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:12px; align-items:center; background:#F8FBFC; }
+    .panel__bar h2 { margin:0; font:700 1rem/1.2 Manrope,sans-serif; }
+    .table-wrap { overflow:auto; }
+    table { width:100%; border-collapse:collapse; min-width:1080px; }
+    th, td { padding:13px 14px; text-align:left; border-bottom:1px solid var(--line); font-size:.93rem; vertical-align:middle; }
+    th { background:#F4F9FA; font:700 11.5px/1 Manrope,sans-serif; text-transform:uppercase; letter-spacing:.05em; color:#567780; position:sticky; top:0; }
+    tr:hover td { background:#F8FCFC; }
+    .mono { font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .badge { display:inline-flex; align-items:center; padding:5px 10px; border-radius:999px; font:700 12px/1 Manrope,sans-serif; background:#EAF6F7; color:var(--teal-dark); }
+    .badge--ok { background:#E8F7EF; color:var(--ok); }
+    .badge--warn { background:#FFF6E5; color:var(--warn); }
+    .prog { max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .act {
+      border:1px solid var(--line); background:#fff; color:var(--ink); text-decoration:none;
+      border-radius:9px; padding:8px 10px; font:600 12.5px/1 Manrope,sans-serif; display:inline-flex; align-items:center; gap:6px;
+    }
+    .act:hover { border-color:var(--teal); color:var(--teal-dark); }
+    .act--wa { background:#ECFDF3; border-color:#B7E4C7; color:#166534; }
+    .act--mail { background:#EEF6FF; border-color:#BFDBFE; color:#1D4ED8; }
+    .act--view { background:#F0FBFC; border-color:#BFE3E7; color:var(--teal-dark); }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
+    .chip { background:#fff; border:1px solid var(--line); border-radius:999px; padding:7px 12px; font-size:.85rem; color:var(--muted); }
+    .chip strong { color:var(--ink); }
+    @media (max-width:960px){ .kpis{ grid-template-columns:1fr 1fr; } }
+    @media (max-width:640px){ .kpis{ grid-template-columns:1fr; } main{ padding:18px 14px 40px; } }
   </style>
 </head>
 <body>
   <header>
-    <div>
+    <div class="brand">
       <strong>BIOMEND Admin</strong>
-      <span style="opacity:.7; margin-left:10px;">{{ admin_user }}</span>
+      <span>{{ admin_user }} · Panel de inscripciones</span>
     </div>
     <form method="post" action="/admin/logout">
       <button type="submit">Cerrar sesión</button>
     </form>
   </header>
   <main>
-    <h1>Inscripciones</h1>
-    <p class="meta">{{ rows|length }} registro(s) recientes</p>
+    <div class="page-head">
+      <div>
+        <h1>Inscripciones</h1>
+        <p class="meta">Seguimiento operativo de solicitudes recibidas</p>
+      </div>
+    </div>
+
+    {% if flash == 'acceso' %}<div class="flash">Enlace de acceso enviado correctamente.</div>{% endif %}
     {% if db_error %}<div class="err">{{ db_error }}</div>{% endif %}
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Teléfono</th>
-            <th>Programa</th>
-            <th>Estado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for r in rows %}
-          <tr>
-            <td>{{ r.Id_Inscripcion }}</td>
-            <td>{{ r.Fecha_Envio }}</td>
-            <td>{{ r.Nombres }} {{ r.Apellidos }}</td>
-            <td>{{ r.Correo }}</td>
-            <td>{{ r.Telefono }}</td>
-            <td>{{ r.Nombre_Programa }}</td>
-            <td>{{ r.Nombre_Estado }}</td>
-            <td><a class="detail" href="/admin/inscripcion/{{ r.Id_Inscripcion }}">Ver</a></td>
-          </tr>
-          {% else %}
-          <tr><td colspan="8">Aún no hay inscripciones.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi__label">Total</div>
+        <div class="kpi__value">{{ stats.total }}</div>
+        <div class="kpi__hint">Inscripciones acumuladas</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__label">Hoy</div>
+        <div class="kpi__value">{{ stats.hoy }}</div>
+        <div class="kpi__hint">Recibidas en el día (RD)</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__label">Por revisar</div>
+        <div class="kpi__value">{{ stats.recibidas }}</div>
+        <div class="kpi__hint">Estado «Recibida»</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__label">Acceso enviado</div>
+        <div class="kpi__value">{{ stats.acceso_enviado }}</div>
+        <div class="kpi__hint">Meet / Zoom entregado</div>
+      </div>
+    </div>
+
+    {% if stats.por_programa %}
+    <div class="chips">
+      {% for p in stats.por_programa %}
+      <span class="chip"><strong>{{ p.c }}</strong> · {{ p.Nombre_Programa }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="panel">
+      <div class="panel__bar">
+        <h2>Listado reciente</h2>
+        <span class="meta">{{ rows|length }} registro(s)</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Teléfono</th>
+              <th>Programa</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              <td class="mono">#{{ r.Id_Inscripcion }}</td>
+              <td class="mono">{{ fmt_fecha(r.Fecha_Envio) }}</td>
+              <td><strong>{{ r.Nombres }} {{ r.Apellidos }}</strong></td>
+              <td>{{ r.Correo }}</td>
+              <td class="mono">{{ fmt_tel(r.Telefono) }}</td>
+              <td><div class="prog" title="{{ r.Nombre_Programa }}">{{ r.Nombre_Programa }}</div></td>
+              <td>
+                {% if r.Nombre_Estado == 'Acceso enviado' %}
+                <span class="badge badge--ok">{{ r.Nombre_Estado }}</span>
+                {% elif r.Nombre_Estado == 'Recibida' %}
+                <span class="badge badge--warn">{{ r.Nombre_Estado }}</span>
+                {% else %}
+                <span class="badge">{{ r.Nombre_Estado }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="actions">
+                  <a class="act act--view" href="/admin/inscripcion/{{ r.Id_Inscripcion }}">Ver</a>
+                  <a class="act act--wa" href="{{ r.wa_href }}" target="_blank" rel="noopener">WhatsApp</a>
+                  <a class="act act--mail" href="/admin/inscripcion/{{ r.Id_Inscripcion }}#enviar-acceso">Enviar Meet</a>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8">Aún no hay inscripciones.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 </body>

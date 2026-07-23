@@ -6,15 +6,21 @@
   <title>Admin — BIOMEND</title>
   <link rel="stylesheet" href="/static/css/styles.css" />
   <style>
-    body.admin-login { min-height: 100vh; display:grid; place-items:center; background:#0f2a2e; margin:0; font-family: system-ui, sans-serif; }
-    .admin-card { width:min(420px,92vw); background:#fff; border-radius:16px; padding:28px; box-shadow:0 20px 50px rgba(0,0,0,.25); }
-    .admin-card h1 { margin:0 0 8px; font-size:1.35rem; color:#123; }
-    .admin-card p { margin:0 0 18px; color:#567; font-size:.95rem; }
-    .admin-card label { display:block; font-size:.85rem; font-weight:600; margin:12px 0 6px; }
-    .admin-card input { width:100%; padding:10px 12px; border:1px solid #cfd8dc; border-radius:10px; box-sizing:border-box; }
-    .admin-card button { margin-top:18px; width:100%; padding:12px; border:0; border-radius:10px; background:#2C9BA5; color:#fff; font-weight:700; cursor:pointer; }
-    .admin-err { background:#fdecea; color:#b71c1c; padding:10px 12px; border-radius:8px; margin-bottom:12px; font-size:.9rem; }
+    body.admin-login {
+      min-height: 100vh; display:grid; place-items:center; margin:0;
+      font-family: "Source Sans 3", system-ui, sans-serif;
+      background: radial-gradient(900px 420px at 20% 0%, rgba(44,155,165,.25), transparent 50%),
+                  linear-gradient(145deg, #0B2226 0%, #12353A 45%, #1A4E55 100%);
+    }
+    .admin-card { width:min(420px,92vw); background:#fff; border-radius:18px; padding:28px; box-shadow:0 24px 60px rgba(0,0,0,.28); }
+    .admin-card h1 { margin:0 0 8px; font:800 1.35rem/1.2 Manrope, system-ui, sans-serif; color:#0F2A2E; }
+    .admin-card p { margin:0 0 18px; color:#5B7178; font-size:.95rem; }
+    .admin-card label { display:block; font-size:.85rem; font-weight:700; margin:12px 0 6px; color:#3A4E58; }
+    .admin-card input { width:100%; padding:11px 12px; border:1.5px solid #D5E2E5; border-radius:10px; box-sizing:border-box; font:inherit; }
+    .admin-card button { margin-top:18px; width:100%; padding:13px; border:0; border-radius:10px; background:#2C9BA5; color:#fff; font:800 14px Manrope,sans-serif; cursor:pointer; }
+    .admin-err { background:#fdecea; color:#b71c1c; padding:10px 12px; border-radius:8px; margin-bottom:12px; font-size:.9rem; font-weight:600; }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body class="admin-login">
   <form class="admin-card" method="post" action="/admin/login">

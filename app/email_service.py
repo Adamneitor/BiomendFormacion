@@ -162,3 +162,30 @@ def notify_inscripcion(
         body_html=admin_html,
         attachments=attachments,
     )
+
+
+def send_acceso_meet(
+    *,
+    estudiante_nombre: str,
+    estudiante_correo: str,
+    programa: str,
+    meet_link: str,
+) -> bool:
+    """Envía al estudiante el enlace de acceso (Meet/Zoom)."""
+    subject = f"Enlace de acceso — {programa}"
+    body = (
+        f"Hola {estudiante_nombre},\n\n"
+        f"Tu inscripción a «{programa}» fue validada.\n\n"
+        f"Enlace de acceso:\n{meet_link}\n\n"
+        f"Te esperamos.\n\n"
+        f"BIOMEND Formación Continua\n"
+        f"WhatsApp: 809-897-0552 / 829-338-0552\n"
+    )
+    html = f"""
+    <p>Hola <strong>{estudiante_nombre}</strong>,</p>
+    <p>Tu inscripción a <strong>{programa}</strong> fue validada.</p>
+    <p><a href="{meet_link}" style="display:inline-block;padding:12px 18px;background:#2C9BA5;color:#fff;text-decoration:none;border-radius:8px;font-weight:700">Entrar a la sesión</a></p>
+    <p style="word-break:break-all;color:#456">{meet_link}</p>
+    <p>BIOMEND Formación Continua<br/>WhatsApp: 809-897-0552 / 829-338-0552</p>
+    """
+    return send_email(to=estudiante_correo, subject=subject, body_text=body, body_html=html)

@@ -45,6 +45,7 @@
         {% elif form_error == 'csrf' %}La sesión expiró o la solicitud no es válida. Recarga la página e inténtalo de nuevo.
         {% elif form_error == 'archivo' %}Revisa los documentos: solo PDF/JPG/PNG de máximo 5 MB y contenido válido.
         {% elif form_error == 'programa' %}Selecciona un programa válido de la lista.
+        {% elif form_error == 'telefono' %}Selecciona el código de área e ingresa exactamente 7 dígitos del teléfono.
         {% elif form_error == 'config' %}El servicio de inscripción no está disponible temporalmente.
         {% elif form_error == 'guardar' %}No pudimos guardar tu solicitud. Inténtalo de nuevo en unos minutos.
         {% else %}Revisa los datos del formulario e inténtalo de nuevo.
@@ -58,9 +59,22 @@
           {% for f in fields %}
           <label class="field">
             <span class="field__label">{{ f.label }} <span class="req">*</span></span>
-            <input class="bm-field" type="{{ f.type }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}" required maxlength="{% if f.name == 'correo' %}254{% elif f.name in ['nombres','apellidos'] %}120{% elif f.name == 'telefono' %}32{% elif f.name in ['institucion','profesion'] %}200{% elif f.name == 'pais' %}100{% else %}120{% endif %}" />
+            <input class="bm-field" type="{{ f.type }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}" required maxlength="{% if f.name == 'correo' %}254{% elif f.name in ['nombres','apellidos'] %}120{% elif f.name in ['institucion','profesion'] %}200{% elif f.name == 'pais' %}100{% else %}120{% endif %}" />
           </label>
           {% endfor %}
+          <div class="field field--phone">
+            <span class="field__label">Teléfono / WhatsApp <span class="req">*</span></span>
+            <div class="phone-row">
+              <select class="bm-field phone-row__area" name="codigo_area" required aria-label="Código de área">
+                <option value="">Área</option>
+                {% for area in phone_area_codes %}
+                <option value="{{ area }}">{{ area }}</option>
+                {% endfor %}
+              </select>
+              <input class="bm-field phone-row__num" type="tel" name="telefono_local" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" placeholder="0000000" required aria-label="Número (7 dígitos)" />
+            </div>
+            <span class="field__hint">Código de área + 7 dígitos (10 en total, sin +1)</span>
+          </div>
           <label class="field">
             <span class="field__label">Idioma preferido <span class="req">*</span></span>
             <select class="bm-field" name="idioma" required>

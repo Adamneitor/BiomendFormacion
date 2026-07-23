@@ -555,6 +555,9 @@ body.nav-open { overflow: hidden; }
 .field { display: block; }
 .field__label { display: block; font: 600 13.5px/1 var(--font-body); color: #3A4E58; margin-bottom: 8px; }
 .field__label .req { color: var(--danger); }
+.field__hint { display: block; margin-top: 8px; font: 400 12.5px/1.35 var(--font-body); color: #7A8B94; }
+.phone-row { display: grid; grid-template-columns: 110px 1fr; gap: 10px; }
+.phone-row__area { text-align: center; font-weight: 600; }
 .bm-field { width: 100%; padding: 13px 15px; border: 1.5px solid var(--line-3); border-radius: 10px; font: 400 15px/1.2 var(--font-body); color: var(--slate); background: var(--paper); transition: all .2s ease; }
 .bm-field:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(44, 155, 165, .15); }
 
