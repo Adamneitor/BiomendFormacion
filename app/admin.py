@@ -69,6 +69,7 @@ def require_admin(view: Callable):
 
 def whatsapp_href(telefono: str, nombre: str = "", programa: str = "") -> str:
     digits = normalizar_telefono(telefono)
+    # Legacy: solo 10 dígitos nacionales RD → anteponer país 1
     if len(digits) == 10:
         digits = "1" + digits
     msg = (

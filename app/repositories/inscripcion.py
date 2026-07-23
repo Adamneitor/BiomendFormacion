@@ -66,18 +66,34 @@ def normalizar_correo(correo: str) -> str:
 
 
 def normalizar_telefono(telefono: str) -> str:
-    """Solo dígitos; si viene con 1 de país (+1), lo quita dejando 10 dígitos RD."""
-    digits = re.sub(r"\D+", "", telefono or "")
-    if len(digits) == 11 and digits.startswith("1"):
-        digits = digits[1:]
-    return digits
+    """Solo dígitos internacionales (incluye código de país)."""
+    return re.sub(r"\D+", "", telefono or "")
 
 
 def formatear_telefono(telefono: str) -> str:
+    """
+    Presentación amigable.
+    - 11 dígitos empezando en 1 (RD/USA): +1 809-000-0000
+    - 10 dígitos: 809-000-0000
+    - Otros: +{codigo} {resto}
+    """
     digits = normalizar_telefono(telefono)
+    if not digits:
+        return "—"
+    if len(digits) == 11 and digits.startswith("1"):
+        n = digits[1:]
+        return f"+1 {n[:3]}-{n[3:6]}-{n[6:]}"
     if len(digits) == 10:
-        return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
-    return telefono or "—"
+        return f"{digits[:3]}-{digits[3:6]}-{digits[6:]}"
+    # Heurística: códigos 1–3 dígitos
+    for cc_len in (3, 2, 1):
+        if len(digits) > cc_len + 6:
+            cc = digits[:cc_len]
+            rest = digits[cc_len:]
+            if len(rest) == 10:
+                return f"+{cc} {rest[:3]}-{rest[3:6]}-{rest[6:]}"
+            return f"+{cc} {rest}"
+    return f"+{digits}"
 
 
 def formatear_fecha(value) -> str:

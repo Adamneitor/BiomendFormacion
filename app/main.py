@@ -26,6 +26,7 @@ from app.admin import router as admin_router
 from app.db import get_engine
 from app.db_migrate import apply_migrations
 from app.email_service import notify_inscripcion
+from app.phone_codes import PHONE_COUNTRY_CODES, validate_national_number
 from app.repositories.inscripcion import (
     DocumentoPayload,
     InscripcionPayload,
@@ -95,7 +96,7 @@ app.include_router(admin_router)
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 templates.env.auto_reload = True
 templates.env.cache = None
-ASSET_VERSION = "20260723c"
+ASSET_VERSION = "20260723d"
 
 
 def static_url(path: str) -> str:
@@ -421,8 +422,6 @@ ENROLL_FIELDS = [
     {"label": "Provincia o ciudad", "name": "ciudad", "type": "text", "placeholder": "Santo Domingo"},
 ]
 
-PHONE_AREA_CODES = ("809", "829", "849")
-
 ENROLL_DOCS = [
     {"label": "Cédula de identidad", "name": "doc_cedula", "icon": "id-card"},
     {"label": "Documento del grado de estudio", "name": "doc_grado", "icon": "graduation-cap"},
@@ -514,7 +513,7 @@ def inscripcion(request: Request, programa: str = "", ok: int = 0, err: str = ""
     ctx.update({
         "programs": PROGRAMS,
         "fields": ENROLL_FIELDS,
-        "phone_area_codes": PHONE_AREA_CODES,
+        "phone_country_codes": PHONE_COUNTRY_CODES,
         "docs": ENROLL_DOCS,
         "cert_options": CERT_OPTIONS,
         "access_link": "",
@@ -535,8 +534,8 @@ async def inscripcion_submit(
     apellidos: str = Form(...),
     correo: str = Form(...),
     telefono: str = Form(""),
-    codigo_area: str = Form(...),
-    telefono_local: str = Form(...),
+    codigo_pais: str = Form(...),
+    telefono_nacional: str = Form(...),
     institucion: str = Form(...),
     profesion: str = Form(...),
     pais: str = Form(...),
@@ -567,8 +566,8 @@ async def inscripcion_submit(
         nombres = sanitize_text(nombres, FIELD_LIMITS["nombres"])
         apellidos = sanitize_text(apellidos, FIELD_LIMITS["apellidos"])
         correo = sanitize_text(correo, FIELD_LIMITS["correo"]).lower()
-        codigo_area = sanitize_text(codigo_area, 3)
-        telefono_local = sanitize_text(telefono_local, 7)
+        codigo_pais = sanitize_text(codigo_pais, 4)
+        telefono_nacional = sanitize_text(telefono_nacional, 15)
         institucion = sanitize_text(institucion, FIELD_LIMITS["institucion"])
         profesion = sanitize_text(profesion, FIELD_LIMITS["profesion"])
         pais = sanitize_text(pais, FIELD_LIMITS["pais"])
@@ -579,12 +578,10 @@ async def inscripcion_submit(
     except Exception:
         return RedirectResponse(url="/inscripcion?err=validacion", status_code=303)
 
-    # Teléfono RD homologado: código de área + 7 dígitos = 10 dígitos (sin +1)
-    import re as _re
-    local_digits = _re.sub(r"\D+", "", telefono_local)
-    if codigo_area not in PHONE_AREA_CODES or len(local_digits) != 7:
+    # Teléfono: código país + número nacional (longitud según país; tope E.164 = 15)
+    ok_phone, telefono = validate_national_number(codigo_pais, telefono_nacional)
+    if not ok_phone:
         return RedirectResponse(url="/inscripcion?err=telefono", status_code=303)
-    telefono = f"{codigo_area}{local_digits}"
 
     selected = resolve_program(programa)
     if selected is None:

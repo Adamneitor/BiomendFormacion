@@ -45,7 +45,7 @@
         {% elif form_error == 'csrf' %}La sesión expiró o la solicitud no es válida. Recarga la página e inténtalo de nuevo.
         {% elif form_error == 'archivo' %}Revisa los documentos: solo PDF/JPG/PNG de máximo 5 MB y contenido válido.
         {% elif form_error == 'programa' %}Selecciona un programa válido de la lista.
-        {% elif form_error == 'telefono' %}Selecciona el código de área e ingresa exactamente 7 dígitos del teléfono.
+        {% elif form_error == 'telefono' %}Selecciona el código de país (+1, +52…) e ingresa el teléfono nacional (en RD: 10 dígitos, ej. 8090000000).
         {% elif form_error == 'config' %}El servicio de inscripción no está disponible temporalmente.
         {% elif form_error == 'guardar' %}No pudimos guardar tu solicitud. Inténtalo de nuevo en unos minutos.
         {% else %}Revisa los datos del formulario e inténtalo de nuevo.
@@ -65,15 +65,20 @@
           <div class="field field--phone">
             <span class="field__label">Teléfono / WhatsApp <span class="req">*</span></span>
             <div class="phone-row">
-              <select class="bm-field phone-row__area" name="codigo_area" required aria-label="Código de área">
-                <option value="">Área</option>
-                {% for area in phone_area_codes %}
-                <option value="{{ area }}">{{ area }}</option>
+              <select class="bm-field phone-row__cc" name="codigo_pais" id="codigoPais" required aria-label="Código de país">
+                {% for cc in phone_country_codes %}
+                <option
+                  value="{{ cc.code }}"
+                  data-nsn-min="{{ cc.nsn_min }}"
+                  data-nsn-max="{{ cc.nsn_max }}"
+                  data-placeholder="{{ cc.placeholder }}"
+                  {% if cc.code == '1' %}selected{% endif %}
+                >{{ cc.label }}</option>
                 {% endfor %}
               </select>
-              <input class="bm-field phone-row__num" type="tel" name="telefono_local" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" placeholder="0000000" required aria-label="Número (7 dígitos)" />
+              <input class="bm-field phone-row__num" type="tel" name="telefono_nacional" id="telefonoNacional" inputmode="numeric" maxlength="14" placeholder="809-000-0000" required aria-label="Número nacional" />
             </div>
-            <span class="field__hint">Código de área + 7 dígitos (10 en total, sin +1)</span>
+            <span class="field__hint" id="telefonoHint">Código de país + número nacional. RD/USA/CA: <strong>+1</strong> y <strong>809-000-0000</strong> (exactamente 10 dígitos).</span>
           </div>
           <label class="field">
             <span class="field__label">Idioma preferido <span class="req">*</span></span>
@@ -176,32 +181,75 @@
 (function () {
   var select = document.getElementById('programaSelect');
   var section = document.getElementById('certSection');
-  if (!select || !section) return;
-
-  function syncCert() {
-    var opt = select.options[select.selectedIndex];
-    var offers = opt && opt.getAttribute('data-offers-cert') === '1';
-    section.hidden = !offers;
-    section.querySelectorAll('input[type="radio"][name="certificado"]').forEach(function (el) {
-      el.required = offers;
-      if (!offers) el.checked = false;
-    });
-    var hidden = document.getElementById('certHidden');
-    if (!offers) {
-      if (!hidden) {
-        hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = 'certificado';
-        hidden.id = 'certHidden';
-        hidden.value = 'No deseo recibir certificado';
-        select.form.appendChild(hidden);
+  if (select && section) {
+    function syncCert() {
+      var opt = select.options[select.selectedIndex];
+      var offers = opt && opt.getAttribute('data-offers-cert') === '1';
+      section.hidden = !offers;
+      section.querySelectorAll('input[type="radio"][name="certificado"]').forEach(function (el) {
+        el.required = offers;
+        if (!offers) el.checked = false;
+      });
+      var hidden = document.getElementById('certHidden');
+      if (!offers) {
+        if (!hidden) {
+          hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = 'certificado';
+          hidden.id = 'certHidden';
+          hidden.value = 'No deseo recibir certificado';
+          select.form.appendChild(hidden);
+        }
+      } else if (hidden) {
+        hidden.remove();
       }
-    } else if (hidden) {
-      hidden.remove();
     }
+    select.addEventListener('change', syncCert);
+    syncCert();
   }
-  select.addEventListener('change', syncCert);
-  syncCert();
+
+  var cc = document.getElementById('codigoPais');
+  var num = document.getElementById('telefonoNacional');
+  var hint = document.getElementById('telefonoHint');
+  if (!cc || !num) return;
+
+  function digitsOnly(v) {
+    return String(v || '').replace(/\D+/g, '');
+  }
+
+  function syncPhone() {
+    var opt = cc.options[cc.selectedIndex];
+    if (!opt) return;
+    var nmin = parseInt(opt.getAttribute('data-nsn-min') || '8', 10);
+    var nmax = parseInt(opt.getAttribute('data-nsn-max') || '15', 10);
+    var ph = opt.getAttribute('data-placeholder') || '';
+    // maxlength cuenta caracteres del input (puede incluir guiones); margen para formato
+    num.maxLength = Math.min(nmax + 4, 20);
+    num.setAttribute('minlength', String(nmin));
+    num.placeholder = ph;
+    num.dataset.nsnMin = String(nmin);
+    num.dataset.nsnMax = String(nmax);
+    if (hint) {
+      if (nmin === nmax) {
+        hint.innerHTML = 'Número nacional: exactamente <strong>' + nmax + '</strong> dígitos (sin el código +' + opt.value + ').';
+      } else {
+        hint.innerHTML = 'Número nacional: entre <strong>' + nmin + '</strong> y <strong>' + nmax + '</strong> dígitos (sin el código +' + opt.value + ').';
+      }
+    }
+    var d = digitsOnly(num.value);
+    if (d.length > nmax) num.value = d.slice(0, nmax);
+  }
+
+  num.addEventListener('input', function () {
+    var nmax = parseInt(num.dataset.nsnMax || '15', 10);
+    var d = digitsOnly(num.value);
+    if (d.length > nmax) {
+      num.value = d.slice(0, nmax);
+    }
+  });
+
+  cc.addEventListener('change', syncPhone);
+  syncPhone();
 })();
 </script>
 {% endblock %}
