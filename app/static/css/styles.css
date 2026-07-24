@@ -696,8 +696,8 @@ body.nav-open { overflow: hidden; }
 .footer.section--dark,
 .footer {
   position: relative;
-  overflow: hidden;
-  padding: 72px 0 32px;
+  overflow: visible; /* no cortar logos / copyright */
+  padding: 72px 0 calc(40px + env(safe-area-inset-bottom, 0px));
   background:
     radial-gradient(circle at 15% 18%, rgba(44, 155, 165, .18), transparent 42%),
     radial-gradient(circle at 85% 80%, rgba(95, 208, 217, .08), transparent 40%),
@@ -713,8 +713,9 @@ body.nav-open { overflow: hidden; }
 .footer__links { display: flex; flex-direction: column; gap: 11px; }
 .footer__links a { font: 400 14.5px/1 var(--font-body); color: rgba(255, 255, 255, .66); }
 .footer__links a:hover { color: #fff; }
-.footer__avales { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
-.footer__aval { height: 52px; width: auto; max-width: 160px; object-fit: contain; background: transparent; }
+.footer__avales { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.footer__aval { height: 52px; width: auto; max-width: 200px; object-fit: contain; background: transparent; }
+.footer__aval--cediem { height: 48px; max-width: 220px; }
 .footer__aval--utesur { height: 64px; }
 .footer__contact { display: flex; flex-direction: column; gap: 13px; }
 .footer__contact-row { display: flex; gap: 11px; align-items: flex-start; }
@@ -780,8 +781,8 @@ body:has(.section--merge-footer) .footer.section--dark {
 }
 
 /*
-  Contacto / Inscripción: última sección oscura + footer = UN solo espacio
-  (mismo gradiente + iconos flotantes extendidos detrás del footer)
+  Contacto / Inscripción: última sección oscura + footer = UN solo espacio.
+  overflow:visible evita que el footer quede recortado al “unir” fondos.
 */
 body.page-contacto main,
 body.page-inscripcion main {
@@ -793,12 +794,13 @@ body.page-contacto main > .section--merge-footer.section--dark,
 body.page-contacto main > .section--dark:last-child,
 body.page-inscripcion main > .section--merge-footer.section--dark,
 body.page-inscripcion main > .section--dark:last-child {
+  overflow: visible;
   background:
     radial-gradient(circle at 15% 18%, rgba(44, 155, 165, .18), transparent 42%),
     radial-gradient(circle at 85% 80%, rgba(95, 208, 217, .08), transparent 40%),
     linear-gradient(160deg, #12303B 0%, #0F2731 55%, #0A1F28 100%) !important;
-  padding-bottom: clamp(420px, 58vw, 560px);
-  margin-bottom: calc(-1 * clamp(420px, 58vw, 560px));
+  padding-bottom: 48px;
+  margin-bottom: 0;
   border: none;
   box-shadow: none;
 }
@@ -811,26 +813,35 @@ body.page-contacto .footer.section--dark,
 body.page-contacto .footer,
 body.page-inscripcion .footer.section--dark,
 body.page-inscripcion .footer {
-  background: transparent !important;
+  background:
+    radial-gradient(circle at 15% 18%, rgba(44, 155, 165, .18), transparent 42%),
+    radial-gradient(circle at 85% 80%, rgba(95, 208, 217, .08), transparent 40%),
+    linear-gradient(180deg, #0F2731 0%, #0A1F28 100%) !important;
   margin-top: 0 !important;
-  padding-top: 110px !important;
+  padding-top: 28px !important;
   border: none !important;
   box-shadow: none !important;
   position: relative;
   z-index: 5;
+  overflow: visible;
 }
 body.page-contacto .footer .dark-floaters,
 body.page-inscripcion .footer .dark-floaters {
   display: none !important;
 }
 
-/* Otras páginas: footer comparte el mismo gradiente al unirse */
+/* Continuidad visual cuando la última sección ya es oscura */
+body:has(main > .section--dark:last-child):not(.page-contacto):not(.page-inscripcion) main > .section--dark:last-child {
+  overflow: visible;
+  padding-bottom: 48px;
+}
 body:has(main > .section--dark:last-child):not(.page-contacto):not(.page-inscripcion) .footer.section--dark {
   background:
     radial-gradient(circle at 15% 18%, rgba(44, 155, 165, .18), transparent 42%),
     radial-gradient(circle at 85% 80%, rgba(95, 208, 217, .08), transparent 40%),
-    linear-gradient(160deg, #12303B 0%, #0F2731 55%, #0A1F28 100%);
-  padding-top: 20px;
+    linear-gradient(180deg, #0F2731 0%, #0A1F28 100%);
+  padding-top: 28px;
+  overflow: visible;
 }
 body:has(main > .section--dark:last-child):not(.page-contacto):not(.page-inscripcion) .footer .dark-floaters {
   display: none;
@@ -1037,17 +1048,14 @@ body:has(main > .section--dark:last-child):not(.page-contacto):not(.page-inscrip
   .section-head { margin-bottom: 36px; }
   .gallery-slide img { height: min(440px, 62vw); }
 
-  /* Footer unido: menos vacío en tablet */
-  body.page-contacto main > .section--merge-footer.section--dark,
-  body.page-contacto main > .section--dark:last-child,
-  body.page-inscripcion main > .section--merge-footer.section--dark,
-  body.page-inscripcion main > .section--dark:last-child {
-    padding-bottom: clamp(380px, 55vw, 500px);
-    margin-bottom: calc(-1 * clamp(380px, 55vw, 500px));
-  }
+  /* Hero: sin foto en tablet/móvil (ocupa demasiado) */
+  .hero__media { display: none !important; }
+  .hero__grid { grid-template-columns: 1fr !important; }
+  .hero { padding: 120px 0 64px; }
+
   body.page-contacto .footer,
   body.page-inscripcion .footer {
-    padding-top: 88px !important;
+    padding-top: 24px !important;
   }
 }
 
@@ -1069,21 +1077,15 @@ body:has(main > .section--dark:last-child):not(.page-contacto):not(.page-inscrip
 
   .footer__grid { grid-template-columns: 1fr !important; gap: 36px !important; }
   .footer__brand-text { max-width: none; }
+  .footer__aval--cediem { height: 44px; max-width: 200px; }
 
   .text-justify { text-align: left; hyphens: none; }
   .benefit-chip { max-width: min(320px, 78vw); }
   .dark-floater--5 { display: none; }
 
-  body.page-contacto main > .section--merge-footer.section--dark,
-  body.page-contacto main > .section--dark:last-child,
-  body.page-inscripcion main > .section--merge-footer.section--dark,
-  body.page-inscripcion main > .section--dark:last-child {
-    padding-bottom: clamp(360px, 70vw, 480px);
-    margin-bottom: calc(-1 * clamp(360px, 70vw, 480px));
-  }
   body.page-contacto .footer,
   body.page-inscripcion .footer {
-    padding-top: 72px !important;
+    padding-top: 20px !important;
   }
 }
 
@@ -1178,18 +1180,16 @@ body:has(main > .section--dark:last-child):not(.page-contacto):not(.page-inscrip
 
   .footer__logo { height: 44px; }
   .footer__grid { gap: 28px !important; padding-bottom: 32px; }
-  .footer__bottom span { font-size: 12.5px; line-height: 1.4; display: block; padding: 0 8px; }
-
-  body.page-contacto main > .section--merge-footer.section--dark,
-  body.page-contacto main > .section--dark:last-child,
-  body.page-inscripcion main > .section--merge-footer.section--dark,
-  body.page-inscripcion main > .section--dark:last-child {
-    padding-bottom: clamp(340px, 95vw, 460px);
-    margin-bottom: calc(-1 * clamp(340px, 95vw, 460px));
+  .footer__bottom {
+    padding-top: 22px;
+    padding-bottom: 8px;
   }
+  .footer__bottom span { font-size: 12.5px; line-height: 1.4; display: block; padding: 0 8px; }
+  .footer__aval--cediem { height: 40px; max-width: min(220px, 72vw); }
+
   body.page-contacto .footer,
   body.page-inscripcion .footer {
-    padding-top: 64px !important;
+    padding-top: 16px !important;
   }
 
   /* Menos movimiento 3D en touch (más limpio) */

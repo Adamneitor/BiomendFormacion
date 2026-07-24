@@ -96,7 +96,7 @@ app.include_router(admin_router)
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 templates.env.auto_reload = True
 templates.env.cache = None
-ASSET_VERSION = "20260723d"
+ASSET_VERSION = "20260724a"
 
 
 def static_url(path: str) -> str:
